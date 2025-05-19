@@ -7,6 +7,11 @@ class Base(DeclarativeBase):
     pass
 
 def _engine():
-    return create_engine(get_settings().database_uri, pool_pre_ping=True)
+    # casteo de la uri de la db a string
+    return create_engine(
+        str(get_settings().database_uri),   #obtener config prov de env
+        pool_pre_ping=True,
+        future=True,
+    )
 
 SessionLocal = sessionmaker(bind=_engine(), autocommit=False, autoflush=False)

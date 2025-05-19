@@ -1,12 +1,38 @@
 # app/core/config.py
 from functools import lru_cache
-from pydantic import BaseSettings, PostgresDsn
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import PostgresDsn, field_validator
 
 class Settings(BaseSettings):
-    database_uri: PostgresDsn
+    # ── campos que SÍ usas ───────────────────────────
+    db_host: str = "postgres"
+    db_port: int = 5432
+    db_name: str
+    db_user: str
+    db_pass: str
+    batch_size: int = 1000
+    csv_path: str = "./data"
 
-    class Config:
-        env_file = ".env"
+    # opcional: cadena completa
+    database_uri: PostgresDsn | None = None
+
+    # ── configuración del modelo ─────────────────────
+    model_config = SettingsConfigDict(
+        env_file=".env",          # lee tu .env
+        env_prefix="",            # sin prefijo → coincide tal cual
+        extra="ignore",           # ⚠️ clave: descarta lo que no te interesa
+    )
+
+    # ensamblar la URI si no la pasaron completa
+    @field_validator("database_uri", mode="before")
+    def assemble_db_uri(cls, v, info):
+        if v:
+            return v
+        data = info.data
+        return (
+            f"postgresql+psycopg2://{data['db_user']}:{data['db_pass']}"
+            f"@{data['db_host']}:{data['db_port']}/{data['db_name']}"
+        )
 
 @lru_cache
 def get_settings() -> Settings:
