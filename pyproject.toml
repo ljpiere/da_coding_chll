@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "globant_challenge"
+version = "0.1.0"
+description = "Globant Data Engineering Coding Challenge REST API & Analytics"
+authors = ["Leyton Castro ljpcastro@gmail.com"]
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.111"
+uvicorn = "^0.29"
+sqlalchemy = "^2.0"
+psycopg2-binary = "^2.9"        # Postgres
+python-dotenv = "^1.0"
+pandas = "^2.2"
+alembic = "^1.13"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2"
+pytest-asyncio = "^0.23"
+httpx = "^0.27"
