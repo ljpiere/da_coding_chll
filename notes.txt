@@ -1,1 +1,20 @@
-docker-compose -f docker/docker-compose.yml up --build
+# Poetry execution
+
+$VENV = poetry env info --path
+& "$VENV\Scripts\Activate.ps1"
+
+# url
+http://localhost:8000/docs
+
+# docker launch
+docker compose down
+docker compose build --no-cache
+docker compose up
+
+docker compose ps
+
+
+-- cambios de codigo
+docker compose build api
+docker compose up -d api
+curl http://localhost:8000/api/v1/metrics/above-average-2021 | jq
