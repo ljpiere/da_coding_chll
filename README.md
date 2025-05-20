@@ -1,15 +1,14 @@
 # Globant Data Engineering Challenge – Hiring Analytics API
 > FastAPI · PostgreSQL · Docker · Poetry · SQLAlchemy · Pandas
 
----
 
 ## Arquitectura de referencia
 
 ```mermaid
 graph TD
     subgraph "Docker Compose - Local"
-        API[FastAPI (container)]
-        DB[(PostgreSQL 16)]
+        API[FastAPI container]
+        DB([PostgreSQL 16])
         Vol[Named Volume pgdata]
     end
     Dev[Developer ⇄ DBeaver/HTTP] -->|psql / REST| API
@@ -19,7 +18,6 @@ graph TD
 
 *La imagen de la API se publica en el container registry para cada proveedor cloud*
 
----
 
 ## Stack tecnologico de la API
 
@@ -33,8 +31,6 @@ graph TD
 | **CI** | GitHub Actions → `docker buildx` | Pipeline único que lint-test-build-push. |
 | **Cloud** | Azure Container Apps / AWS ECS Fargate | Serverless containers; escala a 0; SSL/GW gestionado. |
 
----
-
 ## Ejecución local
 
 ```bash
@@ -42,20 +38,16 @@ cp .env.example .env       # configura credenciales
 docker compose up --build  # API → http://localhost:8000/docs
 ```
 
----
-
 ## Pruebas
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.test.yml   up --build --abort-on-container-exit
 ```
 
-- **Carga CSV válida** → 200 + `rows_inserted`
-- **Carga inválida** (target desconocido) → 400
-- **Métricas 2021** → 200 + JSON no vacío
-- **Path feliz** → subir CSV → consultar `/metrics/*` sin error 500
-
----
+- **Carga CSV válida:** 200 + `rows_inserted`
+- **Carga inválida** (target desconocido) 400
+- **Métricas 2021:** 200 + JSON no vacío
+- **Path feliz:** subir CSV , para consultar `/metrics/*` sin error 500
 
 ## Despliegue cloud
 
@@ -81,12 +73,9 @@ az containerapp create -n hiring-api -g rg-hiring    --image hrdemoacr.azurecr.i
 4. **ALB** + ACM cert → ECS service  
 5. **Auto-scaling** basado en CPU o RPS
 
----
-
 ## Cosas que me hubiese gustado incluir
 
 - Alembic migrations + semilla inicial  
 - Auth JWT para asegurar `/upload_csv`  
 - Observabilidad con Azure Monitor / CloudWatch  
 
----
