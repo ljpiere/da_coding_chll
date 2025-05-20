@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import PostgresDsn, field_validator
 
 class Settings(BaseSettings):
-    # ── campos que SÍ usas ───────────────────────────
+    # from env file 
     db_host: str = "postgres"
     db_port: int = 5432
     db_name: str
@@ -13,14 +13,14 @@ class Settings(BaseSettings):
     batch_size: int = 1000
     csv_path: str = "./data"
 
-    # opcional: cadena completa
+    # use a db uri string
     database_uri: PostgresDsn | None = None
 
-    # ── configuración del modelo ─────────────────────
+    # model config
     model_config = SettingsConfigDict(
-        env_file=".env",          # lee tu .env
-        env_prefix="",            # sin prefijo → coincide tal cual
-        extra="ignore",           # ⚠️ clave: descarta lo que no te interesa
+        env_file=".env",          # .env file read
+        env_prefix="",
+        extra="ignore",
     )
 
     # ensamblar la URI si no la pasaron completa
