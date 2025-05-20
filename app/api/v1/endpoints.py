@@ -17,26 +17,43 @@ def get_db() -> Session:      # dependency
     finally:
         db.close()
 
-# ---------- 1. Carga CSV a DB ----------
+# carga CSV a DB
 TARGET_MAP = {
     "departments": m.Department,
     "jobs": m.Job,
     "hired_employees": m.HiredEmployee,
 }
 
+COLS = {
+    "departments": ["id", "department"],
+    "jobs": ["id", "job"],
+    "hired_employees": ["id", "name", "datetime", "department_id", "job_id"],
+}
+
+# @router.post("/upload_csv")
+# async def upload_csv(
+#     target: str,
+#     file: Annotated[UploadFile, File(... )],
+#     db: Session = Depends(get_db),
+# ):
+#     if target not in TARGET_MAP:
+#         raise HTTPException(400, "target inválido")
+#     df = pd.read_csv(file.file, header=None, names=COLS[target])
+#     df.to_sql(TARGET_MAP[target].__tablename__, db.bind, if_exists="append", index=False)
+#     return {"rows_inserted": len(df)}
+
 @router.post("/upload_csv")
-async def upload_csv(
-    target: str,
-    file: Annotated[UploadFile, File(... )],
-    db: Session = Depends(get_db),
-):
+async def upload_csv(target: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
     if target not in TARGET_MAP:
         raise HTTPException(400, "target inválido")
-    df = pd.read_csv(file.file)
-    df.to_sql(TARGET_MAP[target].__tablename__, db.bind, if_exists="append", index=False)
-    return {"rows_inserted": len(df)}
 
-# ---------- 2. Inserción batch ----------
+    # lee SIEMPRE sin cabecera y asigna nombres
+    df = pd.read_csv(file.file, header=None, names=COLS[target])
+
+    df.to_sql(TARGET_MAP[target].__tablename__, db.bind,
+              if_exists="append", index=False)
+    return {"rows_inserted": len(df)}
+# Inserción batch 
 from pydantic import BaseModel, field_validator
 from datetime import datetime
 
@@ -62,7 +79,7 @@ async def batch_employees(
     db.commit()
     return {"inserted": len(employees)}
 
-# ---------- 3. Métricas 2021 ----------
+# métricas 2021
 from sqlalchemy import text
 
 BASE_DIR = Path(__file__).resolve().parent.parent / "queries"
