@@ -24,12 +24,12 @@ graph TD
 | Área | Elección | Justificación |
 |------|----------|---------------|
 | **Gestión dependencias** | Poetry 1.7 + `pyproject.toml` | Aisla libs, bloquea versiones y facilita reproducibilidad CI/CD. |
-| **ORM** | SQLAlchemy 2 (Declarative) | Control fino en migraciones (Alembic) y compatibilidad con `pandas.to_sql`. |
+| **ORM** | SQLAlchemy 2 (Declarative) | Compatibilidad con `pandas.to_sql`. |
 | **Carga masiva** | `/upload_csv` (`pandas.read_csv` → `to_sql`) | Simple e idempotente; casting explícito de `datetime`. |
 | **Queries analíticas** | SQL en `app/queries/metrics.sql` | Separación CQRS; tuning y revisión independiente del código Python. |
 | **Tests** | `pytest` + `httpx.AsyncClient` | Ejecuta contra la API real y BD efímera usando el mismo compose. |
-| **CI** | GitHub Actions → `docker buildx` | Pipeline único que lint-test-build-push. |
-| **Cloud** | Azure Container Apps / AWS ECS Fargate | Serverless containers; escala a 0; SSL/GW gestionado. |
+| **CI** | GitHub Actions → `docker buildx` | No se realizó: Pipeline único que lint-test-build-push. |
+| **Cloud** | Azure Container Apps / AWS ECS Fargate | Propuesta de arquitectura: Serverless containers; escala a 0; SSL/GW gestionado. |
 
 ## Ejecución local
 
